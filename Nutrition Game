@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<title>Mata Kanikansari · Card Game Tester</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", Consolas, monospace;
+
+  --bg-page: #F7F3EA;
+  --bg-paper: #FFFDF7;
+  --bg-soft: #F0EAD8;
+
+  --ink-1: #1A1611;
+  --ink-2: #3D362C;
+  --ink-3: #807769;
+  --ink-4: #B0A799;
+  --line: #E8E2D2;
+  --line-strong: #C4BDB0;
+
+  --avail: #2D5530;
+  --avail-soft: #E8F0E1;
+  --access: #2C5985;
+  --access-soft: #DEE9F2;
+  --util: #4E3F73;
+  --util-soft: #E5E0EF;
+  --stab: #9A6B1F;
+  --stab-soft: #F2E5CD;
+
+  --t-P: #B8344E;
+  --t-L: #C16285;
+  --t-C: #D08B3E;
+  --t-A: #2E69A1;
+  --t-W: #6B5BB5;
+  --t-E: #6F6963;
+
+  --good: #4A8264;
+  --good-soft: #DCEEDE;
+  --bad: #B8344E;
+  --bad-soft: #F7D9DC;
+  --warn: #C77F2C;
+  --warn-soft: #FCE9D0;
+
+  --severe-bg: #F8DCDC;
+  --moderate-bg: #F8E3C5;
+  --mild-bg: #E6EDC5;
+  --normal-bg: #D2E5D8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg-page); height: 100%; overflow: hidden; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "ss02", "cv11";
+}
+
+/* ━━━ APP CONTAINER ━━━ */
+.app {
+  max-width: 1340px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+/* ━━━ HEADER ━━━ */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.brand-line { display: flex; align-items: baseline; gap: 14px; }
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  color: var(--ink-1);
+  font-style: italic;
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.status { text-align: right; }
+
+.status .round-num {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ink-1);
+}
+
+.status .round-num span { font-size: 14px; color: var(--ink-3); }
+
+.status .phase {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+button.iconbtn {
+  font-family: var(--font-body);
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  padding: 8px 12px;
+  color: var(--ink-2);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.18s ease;
+  border-radius: 2px;
+}
+
+button.iconbtn:hover {
+  background: var(--ink-1);
+  color: var(--bg-paper);
+  border-color: var(--ink-1);
+}
+
+/* ━━━ MAIN GAME AREA ━━━ */
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+/* ━━━ TRACKER ━━━ */
+.tracker {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  padding: 12px 18px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.tracker-head {
+  display: grid;
+  grid-template-columns: 28px 140px 1fr 56px 46px;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tracker-head .scale-zones {
+  display: grid;
+  grid-template-columns: 61.54% 23.08% 7.69% 7.69%;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.scale-zones span:nth-child(1) { color: #8A2929; }
+.scale-zones span:nth-child(2) { color: #8A571B; }
+.scale-zones span:nth-child(3) { color: #4F6716; }
+.scale-zones span:nth-child(4) { color: #1F5933; }
+
+.tracker-head .head-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-align: right;
+}
+
+.token-row {
+  display: grid;
+  grid-template-columns: 28px 140px 1fr 56px 46px;
+  gap: 14px;
+  align-items: center;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+
+.token-row:first-of-type { border-top: none; }
+
+.token-row.changed-up::before,
+.token-row.changed-down::before {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  border-radius: 2px;
+}
+.token-row.changed-up::before { background: linear-gradient(90deg, rgba(74, 130, 100, 0.07), transparent 60%); }
+.token-row.changed-down::before { background: linear-gradient(90deg, rgba(184, 52, 78, 0.08), transparent 60%); }
+
+.token-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bg-paper);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+.token-name {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  color: var(--ink-1);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.token-name-sub {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+
+.scale-bar {
+  position: relative;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+}
+
+.scale-zone { position: absolute; top: 0; bottom: 0; }
+.scale-zone.severe { left: 0; width: 61.54%; background: var(--severe-bg); }
+.scale-zone.moderate { left: 61.54%; width: 23.08%; background: var(--moderate-bg); }
+.scale-zone.mild { left: 84.62%; width: 7.69%; background: var(--mild-bg); }
+.scale-zone.normal { left: 92.31%; width: 7.69%; background: var(--normal-bg); }
+
+.scale-tick {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: rgba(26, 22, 17, 0.18);
+}
+
+.scale-marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--bg-paper);
+  box-shadow: 0 1px 3px rgba(26, 22, 17, 0.3);
+  transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.token-score {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink-1);
+  line-height: 1;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.token-score-sub {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+  text-align: right;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+
+.token-delta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.token-delta.up { color: var(--good); }
+.token-delta.down { color: var(--bad); }
+.token-delta.flat { color: var(--ink-4); }
+
+/* ━━━ PLAY GRID ━━━ */
+.play-row {
+  display: grid;
+  grid-template-columns: 1fr 256px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.table-area, .side-area {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+
+.area-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.area-note {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.table-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* ━━━ CARD ━━━ */
+.card {
+  position: relative;
+  background: var(--bg-paper);
+  border-radius: 5px;
+  padding: 10px 11px 9px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  text-align: left;
+  user-select: none;
+  min-height: 138px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 5px 5px 0 0;
+}
+
+.card.suit-avail::before { background: var(--avail); }
+.card.suit-access::before { background: var(--access); }
+.card.suit-util::before { background: var(--util); }
+.card.suit-stab::before { background: var(--stab); }
+
+.card:hover:not(.played):not(.disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(26, 22, 17, 0.08), 0 2px 5px rgba(26, 22, 17, 0.04);
+  border-color: var(--ink-2);
+}
+
+.card.played { cursor: default; }
+.card.disabled { cursor: not-allowed; opacity: 0.6; }
+.card.blocker { background: linear-gradient(160deg, #FBE8E8 0%, var(--bg-paper) 70%); }
+.card.counter { background: linear-gradient(160deg, #E3EEDE 0%, var(--bg-paper) 70%); }
+
+.card-suit-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.card.suit-avail .card-suit-tag { color: var(--avail); }
+.card.suit-access .card-suit-tag { color: var(--access); }
+.card.suit-util .card-suit-tag { color: var(--util); }
+.card.suit-stab .card-suit-tag { color: var(--stab); }
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink-1);
+  flex: 1;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+}
+
+.card-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 1.5px 5px;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  width: fit-content;
+}
+
+.card-tag.blocker { background: var(--bad); color: white; }
+.card-tag.counter { background: var(--good); color: white; }
+
+.card-icons {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.card-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--bg-paper);
+  letter-spacing: -0.04em;
+  position: relative;
+}
+
+.card-icon.harm { background: transparent !important; border: 1.5px solid; }
+.card-icon.harm::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: -1px; right: -1px;
+  height: 1.5px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+/* ━━━ ANIMATIONS ━━━ */
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cardBackFlip {
+  0% { opacity: 0; transform: rotateY(90deg); }
+  100% { opacity: 1; transform: rotateY(0); }
+}
+
+.card.entering { animation: cardSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.card.flipping { animation: cardBackFlip 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+.slot {
+  min-height: 138px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--ink-4);
+  text-transform: uppercase;
+  background: var(--bg-soft);
+  opacity: 0.4;
+}
+
+.slot.waiting {
+  background: var(--bg-paper);
+  opacity: 1;
+  border-color: var(--access);
+  color: var(--access);
+}
+
+.slot.waiting::after {
+  content: '...';
+  font-family: var(--font-mono);
+  margin-left: 4px;
+  animation: dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { color: transparent; text-shadow: .25em 0 0 transparent, .5em 0 0 transparent; }
+  40% { color: var(--access); text-shadow: .25em 0 0 transparent, .5em 0 0 transparent; }
+  60% { text-shadow: .25em 0 0 var(--access), .5em 0 0 transparent; }
+  80%, 100% { text-shadow: .25em 0 0 var(--access), .5em 0 0 var(--access); }
+}
+
+/* ━━━ SIDE PANEL ━━━ */
+.side-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.opponents {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.opp {
+  padding: 6px 8px;
+  background: var(--bg-soft);
+  border-radius: 3px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.opp.thinking { border-color: var(--access); background: var(--access-soft); }
+
+.opp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.opp-name {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--ink-1);
+  font-weight: 500;
+}
+
+.opp-count {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--ink-3);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.opp-cards {
+  display: flex;
+  gap: 1px;
+}
+
+.opp-card {
+  width: 10px;
+  height: 14px;
+  border-radius: 1px;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+
+.opp-card.s-avail { background: var(--avail); }
+.opp-card.s-access { background: var(--access); }
+.opp-card.s-util { background: var(--util); }
+.opp-card.s-stab { background: var(--stab); }
+
+.opp.thinking .opp-card { animation: shimmer 1.4s ease-in-out infinite; }
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.opp-thinking-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--access);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ━━━ HAND ━━━ */
+.hand-area {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  padding: 10px 14px 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.hand-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+/* ━━━ RESOLUTION ━━━ */
+.resolution-area {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.res-block-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.icon-counts {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.count-cell {
+  padding: 6px 4px;
+  text-align: center;
+  border-radius: 3px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s, background 0.3s;
+}
+
+.count-cell.visible { opacity: 1; transform: translateY(0); }
+.count-cell.up { background: var(--good-soft); border-color: var(--good); }
+.count-cell.down { background: var(--bad-soft); border-color: var(--bad); }
+
+.count-cell-chip {
+  display: inline-flex;
+  width: 18px; height: 18px; border-radius: 50%;
+  align-items: center; justify-content: center;
+  color: white; font-family: var(--font-display);
+  font-size: 10px; font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.count-cell-num {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-1);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-list {
+  list-style: none;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.log-item {
+  padding: 3px 0;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.log-item.visible { opacity: 1; transform: translateX(0); }
+.log-item.good { color: var(--good); }
+.log-item.bad { color: var(--bad); }
+
+.exp-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 14px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.exp-item {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.exp-item.visible { opacity: 1; transform: translateY(0); }
+.exp-item:nth-last-child(-n+2) { border-bottom: none; }
+
+.exp-chip {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 600;
+  color: white; letter-spacing: -0.02em;
+}
+
+.exp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.exp-name {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-1);
+}
+
+.exp-delta {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.exp-delta.up { background: var(--good-soft); color: var(--good); }
+.exp-delta.down { background: var(--bad-soft); color: var(--bad); }
+.exp-delta.flat { background: var(--bg-soft); color: var(--ink-3); }
+
+.exp-body {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* ━━━ ACTIONS ━━━ */
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+button.primary {
+  font-family: var(--font-display);
+  font-size: 14px;
+  background: var(--ink-1);
+  color: var(--bg-paper);
+  border: 1px solid var(--ink-1);
+  padding: 10px 24px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  transition: all 0.18s;
+  border-radius: 3px;
+}
+
+button.primary:hover {
+  background: var(--ink-2);
+  border-color: var(--ink-2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 22, 17, 0.15);
+}
+
+button.primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ━━━ MODAL SYSTEM ━━━ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 22, 17, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--bg-paper);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 760px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.modal.small { max-width: 480px; }
+
+.modal-overlay.visible .modal { transform: translateY(0); }
+
+.modal-header {
+  padding: 24px 32px 12px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.modal-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.modal-skip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.modal-skip:hover { color: var(--ink-1); }
+
+.modal-body {
+  padding: 24px 32px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.slide-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+  color: var(--ink-1);
+}
+
+.slide-lead {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+
+.slide-content {
+  margin-top: 16px;
+}
+
+.slide-content p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin-bottom: 10px;
+}
+
+.slide-content strong {
+  color: var(--ink-1);
+  font-weight: 600;
+}
+
+.slide-content ul {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.slide-content li {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.slide-content li:first-child { border-top: none; }
+
+.slide-illust {
+  background: var(--bg-soft);
+  border-radius: 4px;
+  padding: 20px;
+  margin: 14px 0;
+}
+
+.suit-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.suit-card {
+  background: var(--bg-paper);
+  border-radius: 4px;
+  padding: 12px 12px;
+  border: 1px solid var(--line);
+  border-top: 3px solid;
+  text-align: left;
+}
+
+.suit-card.avail { border-top-color: var(--avail); }
+.suit-card.access { border-top-color: var(--access); }
+.suit-card.util { border-top-color: var(--util); }
+.suit-card.stab { border-top-color: var(--stab); }
+
+.suit-card-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.suit-card.avail .suit-card-name { color: var(--avail); }
+.suit-card.access .suit-card-name { color: var(--access); }
+.suit-card.util .suit-card-name { color: var(--util); }
+.suit-card.stab .suit-card-name { color: var(--stab); }
+
+.suit-card-text {
+  font-size: 11px;
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+
+.token-row-demo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.token-demo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-paper);
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+.token-demo-info { font-size: 11px; line-height: 1.3; }
+.token-demo-name { font-family: var(--font-display); font-size: 12px; font-weight: 500; color: var(--ink-1); }
+.token-demo-sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); letter-spacing: 0.04em; text-transform: uppercase; margin-top: 1px; }
+
+.card-anatomy {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.anatomy-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 12px;
+  border-top: 4px solid var(--avail);
+  position: relative;
+}
+
+.anatomy-callouts { font-size: 12.5px; line-height: 1.5; }
+.anatomy-callouts strong { color: var(--ink-1); }
+.anatomy-callouts li { margin-bottom: 8px; }
+.anatomy-callouts li:last-child { margin-bottom: 0; }
+
+.blocker-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.blocker-card-demo {
+  background: linear-gradient(160deg, #FBE8E8 0%, var(--bg-paper) 70%);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--util);
+  border-radius: 5px;
+  padding: 12px;
+}
+
+.counter-card-demo {
+  background: linear-gradient(160deg, #E3EEDE 0%, var(--bg-paper) 70%);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--util);
+  border-radius: 5px;
+  padding: 12px;
+}
+
+.modal-footer {
+  padding: 16px 32px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slide-indicators {
+  display: flex;
+  gap: 6px;
+}
+
+.slide-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: background 0.2s;
+}
+
+.slide-dot.active { background: var(--ink-1); width: 18px; border-radius: 3px; }
+
+.modal-nav {
+  display: flex;
+  gap: 10px;
+}
+
+button.nav-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 8px 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: all 0.18s;
+}
+
+button.nav-btn.back {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-2);
+}
+
+button.nav-btn.back:hover { border-color: var(--ink-1); color: var(--ink-1); }
+button.nav-btn.back:disabled { opacity: 0.3; cursor: not-allowed; }
+
+button.nav-btn.next {
+  background: var(--ink-1);
+  color: var(--bg-paper);
+  border: 1px solid var(--ink-1);
+}
+
+button.nav-btn.next:hover {
+  background: var(--ink-2);
+  border-color: var(--ink-2);
+}
+
+/* Small modal (tip) */
+.modal.tip { max-width: 440px; }
+.tip-content {
+  text-align: left;
+  padding: 24px 28px;
+}
+.tip-icon {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-style: italic;
+  color: var(--access);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+.tip-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.tip-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+.tip-text strong { color: var(--ink-1); }
+
+/* ━━━ END SCREEN ━━━ */
+.end-screen {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  padding: 32px 40px 36px;
+  border-radius: 4px;
+  text-align: center;
+  margin: auto;
+  max-width: 640px;
+  width: 100%;
+}
+
+.end-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.end-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.end-title.win, .end-title.strong { color: var(--good); }
+.end-title.survival { color: var(--warn); }
+.end-title.loss { color: var(--bad); }
+
+.end-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin-bottom: 22px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.end-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 22px 0;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.end-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+
+.end-stat-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--ink-1);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.end-note {
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--ink-3);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.end-screen-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Smaller-screen note */
+.small-screen-note { display: none; }
+@media (max-width: 1100px), (max-height: 700px) {
+  .small-screen-note {
+    display: flex;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-page);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .small-screen-note h2 { font-family: var(--font-display); font-size: 28px; font-weight: 500; font-style: italic; }
+  .small-screen-note p { font-size: 14px; color: var(--ink-2); max-width: 400px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="small-screen-note">
+  <h2>Open on a larger screen</h2>
+  <p>This tester is designed for a desktop monitor at 1280×800 or larger. Please reload on a bigger display.</p>
+</div>
+
+<!-- Onboarding Modal -->
+<div class="modal-overlay" id="onboarding">
+  <div class="modal" id="onboarding-modal">
+    <div class="modal-header">
+      <span class="modal-eyebrow" id="modal-eyebrow">Introduction · 1 of 6</span>
+      <button class="modal-skip" onclick="closeOnboarding()">Skip intro →</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <div class="slide-indicators" id="slide-dots"></div>
+      <div class="modal-nav">
+        <button class="nav-btn back" id="back-btn" onclick="prevSlide()">← Back</button>
+        <button class="nav-btn next" id="next-btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tip Modal -->
+<div class="modal-overlay" id="tip-modal">
+  <div class="modal tip">
+    <div class="tip-content">
+      <div class="tip-icon">"</div>
+      <div class="tip-title">A note before you start</div>
+      <div class="tip-text">
+        You hold <strong>7 cards</strong>, the other three players hold 7 each. The coloured stripes beside each player tell you <strong>which suits</strong> they're holding — but not which specific cards.
+        <br><br>
+        Watch for blockers in your hand. If you play one and no counter lands on the table, the village takes damage. You can't avoid them — but you can <strong>time them</strong> to land when the right counter is on the table.
+      </div>
+      <button class="primary" style="width:100%" onclick="closeTip()">Start playing</button>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app">
+
+<header class="header" id="header">
+  <div class="brand-line">
+    <div class="brand-title">Mata Kanikansari</div>
+    <div class="brand-sub">Cooperative card game · prototype tester</div>
+  </div>
+  <div class="status">
+    <div class="round-num" id="round-num">1<span>/7</span></div>
+    <div class="phase" id="phase">Your turn</div>
+  </div>
+  <button class="iconbtn" onclick="openOnboarding()">How to play</button>
+  <button class="iconbtn" onclick="restart()">Reset</button>
+</header>
+
+<main class="main" id="main"></main>
+
+</div>
+
+<script>
+"use strict";
+
+/* ━━━━━━━━━━━━━━━━━━━ DATA ━━━━━━━━━━━━━━━━━━━ */
+
+const TOKENS = [
+  { id:'P', name:'Pregnant woman',  sub:'Highest acute need',  color:'#B8344E', startScore:0 },
+  { id:'L', name:'Lactating mother',sub:'Feeding the baby',    color:'#C16285', startScore:0 },
+  { id:'C', name:'Young child',     sub:'First 1000 days',     color:'#D08B3E', startScore:0 },
+  { id:'A', name:'Adolescent girl', sub:'Monthly iron loss',   color:'#2E69A1', startScore:0 },
+  { id:'W', name:'Adult woman',     sub:'Household sustainer', color:'#6B5BB5', startScore:0 },
+  { id:'E', name:'Older woman',     sub:'Declining absorption',color:'#6F6963', startScore:0 },
+];
+
+const SUITS = {
+  avail:  { name:'Availability', label:'AVAILABILITY', desc:'What food exists in the household — vegetables, grains, eggs, fruits, the iron supplement from the health worker.' },
+  access: { name:'Access',       label:'ACCESS',       desc:'How food reaches the plate — buying, sharing, the Anganwadi centre, and who at home eats first.' },
+  util:   { name:'Utilisation',  label:'UTILISATION',  desc:'What happens in the kitchen and the body — iron pots, lemon for absorption, soaking, fermentation, hygiene.' },
+  stab:   { name:'Stability',    label:'STABILITY',    desc:'Sustaining the system — seed saving, year-round gardens, preservation, women\'s groups, water sources.' },
+};
+
+const CARDS = [
+  { key:'jowar',         suit:'avail',  name:'Jowar',                          tokens:['P','A','C','W'] },
+  { key:'wild_greens',   suit:'avail',  name:'Wild leafy greens',              tokens:['P','A','C'] },
+  { key:'nagali',        suit:'avail',  name:'Nagali (ragi)',                  tokens:['P','A','C','E'] },
+  { key:'dal',           suit:'avail',  name:'Dal and pulses',                 tokens:['P','L','C','A'] },
+  { key:'eggs_poultry',  suit:'avail',  name:'Backyard eggs & poultry',        tokens:['P','L','C','A'] },
+  { key:'ifa',           suit:'avail',  name:'Iron supplement (IFA)',          tokens:['P','A','L'] },
+  { key:'fruits',        suit:'avail',  name:'Seasonal fruits',                tokens:['P','A','C'] },
+  { key:'curd',          suit:'avail',  name:'Curd and buttermilk',            tokens:['L','C','E'] },
+  { key:'tubers',        suit:'avail',  name:'Tubers and roots',               tokens:['W','E','C'] },
+
+  { key:'family_budget', suit:'access', name:'Family budget',                  tokens:['P','A','C'] },
+  { key:'anganwadi',     suit:'access', name:'Anganwadi support',              tokens:['P','L','C'] },
+  { key:'pds',           suit:'access', name:'PDS ration',                     tokens:['W','E'] },
+  { key:'family_meal',   suit:'access', name:'Family meal together',           tokens:['C','A'] },
+  { key:'mother_first',  suit:'access', name:'Mother eats first',              tokens:['P','L','A'], counters:'eats_last' },
+  { key:'recipe_taught', suit:'access', name:'Recipe taught',                  tokens:['P','L'], counters:'food_taboos' },
+  { key:'affordable',    suit:'access', name:'Affordable food',                tokens:['P','A'] },
+  { key:'food_taboos',   suit:'access', name:'Food taboos in pregnancy',       harm:['P','L'], blocker:'food_taboos' },
+  { key:'eats_last',     suit:'access', name:'Woman eats last',                harm:['P','L','A','C'], blocker:'eats_last' },
+
+  { key:'iron_kadhai',   suit:'util',   name:'Iron kadhai',                    tokens:['P','A','C'], counters:'aluminium' },
+  { key:'lemon',         suit:'util',   name:'Lemon with meal',                tokens:['P','A','C'] },
+  { key:'jaggary',       suit:'util',   name:'Jaggary with meal',              tokens:['P','A','C'] },
+  { key:'soaking',       suit:'util',   name:'Soaking pulses',                 tokens:['C','A','E'] },
+  { key:'fermented',     suit:'util',   name:'Fermented foods',                tokens:['L','C','E'] },
+  { key:'fresh_cooked',  suit:'util',   name:'Fresh-cooked meal',              tokens:['P','L','C','A','W','E'], counters:'stale' },
+  { key:'handwashing',   suit:'util',   name:'Handwashing',                    tokens:['P','L','C'] },
+  { key:'aluminium',     suit:'util',   name:'Aluminium cookware',             harm:['P','A','C'], blocker:'aluminium' },
+  { key:'stale',         suit:'util',   name:'Stale food',                     harm:['L','C','E'], blocker:'stale' },
+
+  { key:'seed_saving',   suit:'stab',   name:'Seed saving',                    tokens:['W','E'], counters:'migration' },
+  { key:'kitchen_garden',suit:'stab',   name:'Kitchen garden',                 tokens:['P','A','C'] },
+  { key:'preservation',  suit:'stab',   name:'Preservation',                   tokens:['L','E','C'] },
+  { key:'grain_storage', suit:'stab',   name:'Grain storage',                  tokens:['W','E'], counters:'migration' },
+  { key:'water_source',  suit:'stab',   name:'Water source',                   tokens:['P','L','C','E'] },
+  { key:'pass_recipes',  suit:'stab',   name:'Pass on recipes',                tokens:['W','E'] },
+  { key:'bachat_gat',    suit:'stab',   name:'Bachat gat',                     tokens:['P','L'], counters:'tobacco' },
+  { key:'tobacco',       suit:'stab',   name:'Tobacco',                        harm:['P','L','C'], blocker:'tobacco' },
+  { key:'migration',     suit:'stab',   name:'Migration disruption',           harm:['P','L','C','A','W','E'], blocker:'migration' },
+];
+
+const SCALE_MIN = 0, SCALE_MAX = 13;
+const SCALE_RANGE = SCALE_MAX - SCALE_MIN;
+const HAND_SIZE = 7;
+const NUM_PLAYERS = 4;
+const MAX_ROUNDS = 7;
+const POSITIVE_VALUE = 1;
+const BLOCKER_HIT_VALUE = -2;
+const MAX_DELTA = 4;
+
+/* ━━━━━━━━━━━━━━━━━━━ ONBOARDING SLIDES ━━━━━━━━━━━━━━━━━━━ */
+
+const SLIDES = [
+  // Slide 1 — Welcome
+  () => `
+    <div class="slide-title">A village in seven rounds</div>
+    <div class="slide-lead">You're playing a cooperative card game about women's nutrition in the tribal villages of Akkalkuwa, Nandurbar. Six women, all anaemic. You and three other players have seven rounds to lift them out of it — together.</div>
+    <div class="slide-content">
+      <p>This is a <strong>tester</strong>. You play as one of four players; the other three play random cards. In the real game, all four are people sitting around the table, talking to each other.</p>
+      <p>You can't win alone, and you can't avoid the village's problems. The deck contains <strong>six harmful practices</strong> — tobacco, aluminium cookware, stale food, food taboos, household inequity, seasonal migration — and every one of them will hit the table during the game. What you can do is respond.</p>
+    </div>
+  `,
+
+  // Slide 2 — The Village
+  () => `
+    <div class="slide-title">The six women</div>
+    <div class="slide-lead">Every game starts the same way: six tokens, all at zero. Each represents a woman in the village at a different life stage. Each has different nutritional priorities.</div>
+    <div class="slide-illust">
+      <div class="token-row-demo">
+        ${TOKENS.map(t => `
+          <div class="token-demo">
+            <span class="token-chip" style="background:${t.color}">${t.id}</span>
+            <div class="token-demo-info">
+              <div class="token-demo-name">${t.name}</div>
+              <div class="token-demo-sub">${t.sub}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="slide-content">
+      <p>Their haemoglobin runs on a scale from <strong>0 to 13</strong>. Below 8 is severe anaemia. 8 to 11 is moderate. 11 to 12 is mild. 12+ is healthy. Your job is to raise their numbers as far as you can in seven rounds.</p>
+    </div>
+  `,
+
+  // Slide 3 — The four suits
+  () => `
+    <div class="slide-title">Four suits, four pillars</div>
+    <div class="slide-lead">The 36-card deck has nine cards in each of four suits — the four pillars of food security in the FAO framework.</div>
+    <div class="slide-illust">
+      <div class="suit-demo">
+        ${Object.entries(SUITS).map(([k, s]) => `
+          <div class="suit-card ${k}">
+            <div class="suit-card-name">${s.name}</div>
+            <div class="suit-card-text">${s.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="slide-content">
+      <p>Each card has a coloured stripe at the top showing its suit. Play <strong>all four suits in one round</strong> and the lowest-scoring woman gets a bonus +1.</p>
+    </div>
+  `,
+
+  // Slide 4 — Cards and icons
+  () => `
+    <div class="slide-title">Cards carry priority icons</div>
+    <div class="slide-lead">Every card has small coloured letters in its bottom corner. Each letter is one of the six women. The icons tell you which women this card most directly helps.</div>
+    <div class="card-anatomy">
+      <div class="anatomy-card">
+        <div class="card-suit-tag" style="color: var(--avail)">AVAILABILITY</div>
+        <div class="card-name" style="font-family: var(--font-display); font-size: 14px; font-weight: 500; margin-bottom: 8px">Backyard eggs &amp; poultry</div>
+        <div class="card-icons">
+          ${['P','L','C','A'].map(id => {
+            const t = TOKENS.find(x => x.id === id);
+            return `<span class="card-icon" style="background:${t.color}">${id}</span>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="anatomy-callouts">
+        <ul style="list-style:none; padding:0">
+          <li><strong>Stripe</strong> · the colour tells you which suit this card belongs to.</li>
+          <li><strong>Name</strong> · the food or practice the card represents.</li>
+          <li><strong>Icons</strong> · the women this card helps. Eggs help Pregnant (P), Lactating (L), Young child (C), and Adolescent (A) — the four growing bodies.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-content">
+      <p>Each icon on the table is <strong>worth +1</strong> for that woman. So a Backyard eggs card adds one point to all four women whose icons it carries.</p>
+    </div>
+  `,
+
+  // Slide 5 — Blockers and counters
+  () => `
+    <div class="slide-title">Blockers and counters</div>
+    <div class="slide-lead">Six cards in the deck are blockers — real harmful practices the project worked to change. Each one harms specific women. Each one has a counter that cancels it.</div>
+    <div class="blocker-demo">
+      <div class="blocker-card-demo">
+        <div class="card-suit-tag" style="color: var(--util)">UTILISATION</div>
+        <div class="card-name" style="font-family: var(--font-display); font-size: 14px; font-weight: 500; margin-bottom: 6px">Aluminium cookware</div>
+        <div class="card-tag" style="background: var(--bad); color: white">Blocker</div>
+        <div class="card-icons">
+          ${['P','A','C'].map(id => {
+            const t = TOKENS.find(x => x.id === id);
+            return `<span class="card-icon harm" style="border-color:${t.color}; color:${t.color}">${id}</span>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="counter-card-demo">
+        <div class="card-suit-tag" style="color: var(--util)">UTILISATION</div>
+        <div class="card-name" style="font-family: var(--font-display); font-size: 14px; font-weight: 500; margin-bottom: 6px">Iron kadhai</div>
+        <div class="card-tag" style="background: var(--good); color: white">Counter</div>
+        <div class="card-icons">
+          ${['P','A','C'].map(id => {
+            const t = TOKENS.find(x => x.id === id);
+            return `<span class="card-icon" style="background:${t.color}">${id}</span>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="slide-content">
+      <p>A blocker that lands <strong>without its counter</strong> takes <strong>−2 points</strong> off every woman it harms. Aluminium pulls Pregnant, Adolescent, and Young child down by 2 each.</p>
+      <p>If the counter (Iron kadhai) is on the same table, the blocker is <strong>completely neutralised</strong>. The village shrugs it off.</p>
+    </div>
+  `,
+
+  // Slide 6 — How a round works
+  () => `
+    <div class="slide-title">How a round works</div>
+    <div class="slide-lead">Each round, every player plays one card. Four cards land on the table. The village tallies up what happened.</div>
+    <div class="slide-content">
+      <ul>
+        <li><strong style="font-family: var(--font-display); font-size: 18px; color: var(--ink-1); font-weight: 500">1</strong>
+          <div><strong>Counters cancel blockers.</strong> If a blocker and its counter are both on the table, the blocker does nothing.</div></li>
+        <li><strong style="font-family: var(--font-display); font-size: 18px; color: var(--ink-1); font-weight: 500">2</strong>
+          <div><strong>Count icons.</strong> For each woman, add up her positive icons across the four cards.</div></li>
+        <li><strong style="font-family: var(--font-display); font-size: 18px; color: var(--ink-1); font-weight: 500">3</strong>
+          <div><strong>Subtract blocker harm.</strong> Each active blocker that harms her takes −2 from her count.</div></li>
+        <li><strong style="font-family: var(--font-display); font-size: 18px; color: var(--ink-1); font-weight: 500">4</strong>
+          <div><strong>Apply the change.</strong> Her Hb moves by the net number, capped at ±4 per round. Scores can't go below 0 or above 13.</div></li>
+        <li><strong style="font-family: var(--font-display); font-size: 18px; color: var(--ink-1); font-weight: 500">5</strong>
+          <div><strong>Balance bonus.</strong> All four suits played? The lowest-scoring woman gets an extra +1.</div></li>
+      </ul>
+    </div>
+  `,
+];
+
+/* ━━━━━━━━━━━━━━━━━━━ STATE ━━━━━━━━━━━━━━━━━━━ */
+
+let state;
+let currentSlide = 0;
+let onboardingShown = false;
+let animationInProgress = false;
+
+function freshState() {
+  return {
+    round:1,
+    phase:'play',         // 'play' | 'animating' | 'resolution'
+    activeAI: null,       // index of AI player currently "thinking"
+    hands: Array.from({length:NUM_PLAYERS}, ()=>[]),
+    table:[],
+    tokens: TOKENS.map(t => ({ ...t, score:t.startScore, lastDelta:0 })),
+    log:[],
+    explanations:[],
+    counts:{},
+    netCounts:{},
+    revealedCounts: 0,
+    revealedLogs: 0,
+    revealedExplanations: 0,
+    showResolutionPanel: false,
+    gameOver:false,
+    result:null,
+  };
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function init() {
+  state = freshState();
+  const deck = shuffle(CARDS);
+  for (let i = 0; i < HAND_SIZE * NUM_PLAYERS; i++) {
+    state.hands[i % NUM_PLAYERS].push(deck[i]);
+  }
+  render();
+}
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+/* ━━━━━━━━━━━━━━━━━━━ GAME LOGIC ━━━━━━━━━━━━━━━━━━━ */
+
+async function playerPick(idx) {
+  if (state.phase !== 'play' || state.gameOver || animationInProgress) return;
+  animationInProgress = true;
+  state.phase = 'animating';
+
+  // Step 1: Player plays
+  const playerCard = state.hands[0].splice(idx, 1)[0];
+  state.table.push({ ...playerCard, playerSeat: 0, justPlayed: true });
+  render();
+  await delay(700);
+  state.table[state.table.length - 1].justPlayed = false;
+
+  // Step 2-4: AI players play with thinking pause
+  for (let p = 1; p < NUM_PLAYERS; p++) {
+    state.activeAI = p;
+    render();
+    await delay(650);
+
+    const r = Math.floor(Math.random() * state.hands[p].length);
+    const c = state.hands[p].splice(r, 1)[0];
+    state.table.push({ ...c, playerSeat: p, justPlayed: true });
+    state.activeAI = null;
+    render();
+    await delay(450);
+    state.table[state.table.length - 1].justPlayed = false;
+  }
+
+  await delay(500);
+
+  // Step 5: Compute resolution
+  computeResolution();
+  state.showResolutionPanel = true;
+  render();
+
+  // Step 6: Reveal counts one by one
+  await delay(300);
+  for (let i = 0; i < 6; i++) {
+    state.revealedCounts = i + 1;
+    render();
+    await delay(160);
+  }
+
+  // Step 7: Apply movements to tracker (animated via CSS transition)
+  await delay(300);
+  applyMovements();
+  render();
+
+  // Step 8: Reveal log items
+  await delay(500);
+  for (let i = 0; i < state.log.length; i++) {
+    state.revealedLogs = i + 1;
+    render();
+    await delay(200);
+  }
+
+  // Step 9: Reveal explanations
+  await delay(300);
+  for (let i = 0; i < 6; i++) {
+    state.revealedExplanations = i + 1;
+    render();
+    await delay(150);
+  }
+
+  state.phase = 'resolution';
+  animationInProgress = false;
+  render();
+}
+
+function computeResolution() {
+  const t = state.table;
+  const log = [];
+
+  const blockersOnTable = t.filter(c => c.blocker);
+  const countersOnTable = t.filter(c => c.counters);
+  const activeBlockers = blockersOnTable.filter(b =>
+    !countersOnTable.some(c => c.counters === b.blocker)
+  );
+  const cancelledBlockers = blockersOnTable.filter(b =>
+    countersOnTable.some(c => c.counters === b.blocker)
+  );
+
+  cancelledBlockers.forEach(b => log.push({ type:'good', text:`${b.name} neutralised by counter.` }));
+  activeBlockers.forEach(b => log.push({ type:'bad', text:`${b.name} active — no counter played.` }));
+
+  const positive = { P:0, L:0, C:0, A:0, W:0, E:0 };
+  const harmHits = { P:0, L:0, C:0, A:0, W:0, E:0 };
+  t.forEach(c => { if (c.tokens) c.tokens.forEach(tok => positive[tok]++); });
+  activeBlockers.forEach(b => { if (b.harm) b.harm.forEach(tok => harmHits[tok]++); });
+
+  const netCounts = {};
+  Object.keys(positive).forEach(k => {
+    netCounts[k] = (positive[k] * POSITIVE_VALUE) + (harmHits[k] * BLOCKER_HIT_VALUE);
+  });
+
+  // Plan token movements (will be applied later via applyMovements)
+  state.pendingMoves = {};
+  state.tokens.forEach(tok => {
+    let delta = netCounts[tok.id];
+    delta = Math.max(-MAX_DELTA, Math.min(MAX_DELTA, delta));
+    const newScore = Math.max(SCALE_MIN, Math.min(SCALE_MAX, tok.score + delta));
+    state.pendingMoves[tok.id] = newScore - tok.score;
+  });
+
+  // Plan balance bonus
+  state.pendingBonusTokenId = null;
+  const suitsRep = new Set(t.map(c => c.suit));
+  if (suitsRep.size === 4) {
+    // simulate scores after movement
+    const projected = state.tokens.map(tok => ({
+      id: tok.id, name: tok.name,
+      score: Math.max(SCALE_MIN, Math.min(SCALE_MAX, tok.score + state.pendingMoves[tok.id])),
+    }));
+    const candidates = projected.filter(p => p.score < SCALE_MAX).sort((a,b) => a.score - b.score);
+    if (candidates.length > 0) {
+      state.pendingBonusTokenId = candidates[0].id;
+      log.push({ type:'good', text:`Balance bonus: all four suits played — ${candidates[0].name} gains an extra point.` });
+    }
+  }
+
+  // Build explanations
+  const explanations = [];
+  state.tokens.forEach(tok => {
+    const pos = positive[tok.id];
+    const hits = harmHits[tok.id];
+    const net = netCounts[tok.id];
+    let plannedDelta = state.pendingMoves[tok.id];
+    if (state.pendingBonusTokenId === tok.id) plannedDelta += 1;
+    let body = '';
+
+    if (state.pendingBonusTokenId === tok.id && net <= 0) {
+      body = `Balance bonus moved her up. No card directly helped her, but the village played all four suits together — and that lifts the weakest member by one point.`;
+    } else if (plannedDelta > 0) {
+      const helpers = t.filter(c => c.tokens && c.tokens.includes(tok.id)).map(c => c.name);
+      body = `${pos} card${pos !== 1 ? 's' : ''} helped her`;
+      if (hits > 0) body += `, but ${hits} blocker hit${hits > 1 ? 's' : ''} cost ${hits*2} points`;
+      body += `. Net: +${plannedDelta}. ${helpers.length > 0 ? 'Helped by: ' + helpers.join(', ') + '.' : ''}`;
+    } else if (plannedDelta < 0) {
+      const harmCards = activeBlockers.filter(b => b.harm && b.harm.includes(tok.id)).map(b => b.name);
+      body = `${pos} card${pos !== 1 ? 's' : ''} helped her, but ${hits} blocker hit${hits > 1 ? 's' : ''} cost ${hits*2}. Net: ${plannedDelta}. Harmed by: ${harmCards.join(', ')}.`;
+    } else if (tok.score >= SCALE_MAX) {
+      body = `Already at maximum Hb 13. Stays.`;
+    } else if (net === 0) {
+      body = `No card on the table specifically helped or harmed her this round.`;
+    } else if (tok.score === SCALE_MIN && net < 0) {
+      body = `Blocker pressure, but she's already at 0. Can't drop further.`;
+    } else if (net > 0) {
+      body = `${pos} positive icon${pos !== 1 ? 's' : ''} — below the threshold to move (needs net 2 or more).`;
+    } else {
+      body = `Net pressure too small to register a change.`;
+    }
+
+    explanations.push({ tokenId: tok.id, delta: plannedDelta, body, pos, hits });
+  });
+
+  state.log = log;
+  state.counts = positive;
+  state.netCounts = netCounts;
+  state.explanations = explanations;
+}
+
+function applyMovements() {
+  state.tokens.forEach(tok => {
+    const move = state.pendingMoves[tok.id];
+    tok.score = Math.max(SCALE_MIN, Math.min(SCALE_MAX, tok.score + move));
+    tok.lastDelta = move;
+  });
+  if (state.pendingBonusTokenId) {
+    const t = state.tokens.find(x => x.id === state.pendingBonusTokenId);
+    t.score = Math.min(SCALE_MAX, t.score + 1);
+    t.lastDelta += 1;
+  }
+}
+
+function nextRound() {
+  if (animationInProgress) return;
+  state.round++;
+  state.table = [];
+  state.phase = 'play';
+  state.tokens.forEach(t => t.lastDelta = 0);
+  state.revealedCounts = 0;
+  state.revealedLogs = 0;
+  state.revealedExplanations = 0;
+  state.showResolutionPanel = false;
+  if (state.round > MAX_ROUNDS || state.hands[0].length === 0) {
+    endGame();
+    render();
+    return;
+  }
+  render();
+}
+
+function endGame() {
+  state.gameOver = true;
+  const scores = state.tokens.map(t => t.score);
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const inSevere = scores.filter(s => s < 8).length;
+  const atOrAboveMild = scores.filter(s => s >= 11).length;
+  const atNormal = scores.filter(s => s >= 12).length;
+
+  let tier, label, text;
+  if (atNormal === 6) {
+    tier = 'strong'; label = 'Strong win';
+    text = `Every woman in the village reached healthy Hb. The best possible outcome — what the real project's three years of intervention looks like, compressed into seven rounds.`;
+  } else if (atOrAboveMild >= 5 && inSevere === 0) {
+    tier = 'win'; label = 'Win';
+    text = `The village is now mostly above mild anaemia. Some women are healthy, none are in critical territory. A solid intervention.`;
+  } else if (inSevere === 0) {
+    tier = 'survival'; label = 'Survival';
+    text = `Nobody is in severe anaemia anymore, but the village still has more to do. This is the minimum acceptable outcome — where the project's first year often lands.`;
+  } else {
+    tier = 'loss'; label = 'Did not finish';
+    text = `${inSevere} ${inSevere === 1 ? 'woman remains' : 'women remain'} in severe anaemia. Either the blockers hit too hard, or the village couldn't coordinate counters in time.`;
+  }
+  state.result = { tier, label, text, avg, inSevere, atNormal };
+}
+
+function restart() {
+  if (animationInProgress) return;
+  init();
+}
+
+/* ━━━━━━━━━━━━━━━━━━━ MODAL CONTROL ━━━━━━━━━━━━━━━━━━━ */
+
+function showOnboarding() {
+  currentSlide = 0;
+  renderSlide();
+  document.getElementById('onboarding').classList.add('visible');
+}
+
+function openOnboarding() { showOnboarding(); }
+
+function closeOnboarding() {
+  document.getElementById('onboarding').classList.remove('visible');
+  if (!onboardingShown) {
+    onboardingShown = true;
+    setTimeout(() => {
+      document.getElementById('tip-modal').classList.add('visible');
+    }, 350);
+  }
+}
+
+function closeTip() {
+  document.getElementById('tip-modal').classList.remove('visible');
+}
+
+function renderSlide() {
+  const body = document.getElementById('modal-body');
+  body.innerHTML = SLIDES[currentSlide]();
+  document.getElementById('modal-eyebrow').textContent = `Introduction · ${currentSlide + 1} of ${SLIDES.length}`;
+  document.getElementById('back-btn').disabled = currentSlide === 0;
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = currentSlide === SLIDES.length - 1 ? 'Start playing →' : 'Next →';
+
+  const dots = document.getElementById('slide-dots');
+  dots.innerHTML = SLIDES.map((_, i) =>
+    `<span class="slide-dot${i === currentSlide ? ' active' : ''}"></span>`
+  ).join('');
+}
+
+function nextSlide() {
+  if (currentSlide < SLIDES.length - 1) {
+    currentSlide++;
+    renderSlide();
+  } else {
+    closeOnboarding();
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    renderSlide();
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━ RENDER ━━━━━━━━━━━━━━━━━━━ */
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+}
+
+function tokenChip(id, size = 26) {
+  const t = TOKENS.find(x => x.id === id);
+  const fontSize = size >= 30 ? 14 : (size >= 22 ? 12 : 10);
+  return `<span class="token-chip" style="background:${t.color}; width:${size}px; height:${size}px; font-size:${fontSize}px">${id}</span>`;
+}
+
+function cardIcon(id, harm) {
+  const t = TOKENS.find(x => x.id === id);
+  return `<span class="card-icon${harm ? ' harm' : ''}" style="${harm ? 'border-color:' + t.color + ';color:' + t.color : 'background:' + t.color}" title="${t.name}">${id}</span>`;
+}
+
+function scoreToPercent(s) {
+  return ((s - SCALE_MIN) / SCALE_RANGE) * 100;
+}
+
+function renderCard(c, opts = {}) {
+  const isBlocker = !!c.blocker;
+  const isCounter = !!c.counters;
+  const cls = ['card', `suit-${c.suit}`];
+  if (isBlocker) cls.push('blocker');
+  if (isCounter) cls.push('counter');
+  if (opts.played) cls.push('played');
+  if (opts.disabled) cls.push('disabled');
+  if (c.justPlayed) cls.push('entering');
+
+  let onClick = '';
+  if (opts.onClick) onClick = `onclick="${opts.onClick}"`;
+
+  let tagHtml = '';
+  if (isBlocker) tagHtml = `<span class="card-tag blocker">Blocker</span>`;
+  else if (isCounter) tagHtml = `<span class="card-tag counter">Counter</span>`;
+
+  let iconsHtml = '<div class="card-icons">';
+  if (c.tokens) c.tokens.forEach(t => iconsHtml += cardIcon(t, false));
+  if (c.harm) c.harm.forEach(t => iconsHtml += cardIcon(t, true));
+  iconsHtml += '</div>';
+
+  return `<div class="${cls.join(' ')}" ${onClick}>
+    <div class="card-suit-tag">${SUITS[c.suit].label}</div>
+    <div class="card-name">${esc(c.name)}</div>
+    ${tagHtml}
+    ${iconsHtml}
+  </div>`;
+}
+
+function render() {
+  // Header
+  document.getElementById('round-num').innerHTML = `${Math.min(state.round, MAX_ROUNDS)}<span>/${MAX_ROUNDS}</span>`;
+  let phaseText;
+  if (state.gameOver) phaseText = 'Game complete';
+  else if (state.phase === 'play') phaseText = 'Your turn';
+  else if (state.phase === 'animating') {
+    if (state.activeAI) phaseText = `Player ${state.activeAI + 1} is thinking…`;
+    else if (state.showResolutionPanel) phaseText = 'Calculating…';
+    else phaseText = 'Playing…';
+  } else phaseText = 'Round complete';
+  document.getElementById('phase').textContent = phaseText;
+
+  const main = document.getElementById('main');
+
+  if (state.gameOver) {
+    main.innerHTML = `<div class="end-screen-wrap">${renderEndScreen()}</div>`;
+    return;
+  }
+
+  let html = '';
+  html += renderTracker();
+  html += `<div class="play-row">${renderTable()}${renderSide()}</div>`;
+
+  if (state.showResolutionPanel) {
+    html += renderResolution();
+    if (state.phase === 'resolution') {
+      html += `<div class="actions"><button class="primary" onclick="nextRound()">${state.round >= MAX_ROUNDS ? 'See final result →' : 'Continue to next round →'}</button></div>`;
+    }
+  } else {
+    html += renderHand();
+  }
+
+  main.innerHTML = html;
+}
+
+function renderTracker() {
+  let html = `<div class="tracker">
+    <div class="tracker-head">
+      <div></div>
+      <div></div>
+      <div class="scale-zones">
+        <span>Severe</span>
+        <span>Moderate</span>
+        <span>Mild</span>
+        <span>Normal</span>
+      </div>
+      <div class="head-label">Hb</div>
+      <div class="head-label">Δ</div>
+    </div>`;
+
+  state.tokens.forEach(tok => {
+    const delta = tok.lastDelta;
+    const cls = ['token-row'];
+    if (state.showResolutionPanel && delta > 0) cls.push('changed-up');
+    if (state.showResolutionPanel && delta < 0) cls.push('changed-down');
+
+    const deltaText = delta > 0 ? `+${delta}` : (delta < 0 ? `${delta}` : '—');
+    const deltaCls = delta > 0 ? 'up' : (delta < 0 ? 'down' : 'flat');
+    const showDelta = state.showResolutionPanel;
+
+    const markerLeft = scoreToPercent(tok.score);
+
+    html += `<div class="${cls.join(' ')}">
+      <div>${tokenChip(tok.id, 26)}</div>
+      <div>
+        <div class="token-name">${tok.name}</div>
+        <div class="token-name-sub">${tok.sub}</div>
+      </div>
+      <div class="scale-bar">
+        <div class="scale-zone severe"></div>
+        <div class="scale-zone moderate"></div>
+        <div class="scale-zone mild"></div>
+        <div class="scale-zone normal"></div>
+        <div class="scale-tick" style="left:61.54%"></div>
+        <div class="scale-tick" style="left:84.62%"></div>
+        <div class="scale-tick" style="left:92.31%"></div>
+        <div class="scale-marker" style="left:${markerLeft}%; background:${tok.color}"></div>
+      </div>
+      <div>
+        <div class="token-score">${tok.score}</div>
+        <div class="token-score-sub">gm%</div>
+      </div>
+      <div class="token-delta ${deltaCls}">${showDelta ? deltaText : ''}</div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+function renderTable() {
+  let html = `<div class="table-area">
+    <div class="area-head">
+      <div class="section-title">On the Table</div>
+      <div class="area-note">${state.table.length} of 4 cards</div>
+    </div>
+    <div class="table-cards">`;
+
+  for (let i = 0; i < 4; i++) {
+    if (state.table[i]) {
+      html += renderCard(state.table[i], { played: true });
+    } else {
+      // Mark the next-to-be-played slot as "waiting" if an AI is thinking
+      const isWaiting = state.activeAI === i;
+      html += `<div class="slot${isWaiting ? ' waiting' : ''}">${isWaiting ? 'Player ' + (i+1) + ' playing' : 'Empty'}</div>`;
+    }
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function renderSide() {
+  let html = `<div class="side-area">
+    <div class="section-title" style="margin-bottom:8px">Other Players</div>
+    <div class="opponents">`;
+
+  for (let p = 1; p < NUM_PLAYERS; p++) {
+    const thinking = state.activeAI === p;
+    html += `<div class="opp${thinking ? ' thinking' : ''}">
+      <div class="opp-head">
+        <div class="opp-name">Player ${p + 1}</div>
+        <div class="opp-count">${state.hands[p].length}</div>
+      </div>
+      <div class="opp-cards">`;
+    state.hands[p].forEach(c => { html += `<div class="opp-card s-${c.suit}"></div>`; });
+    html += `</div>`;
+    if (thinking) html += `<div class="opp-thinking-text">Choosing a card…</div>`;
+    html += `</div>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function renderHand() {
+  const handDisabled = state.phase !== 'play';
+  let html = `<div class="hand-area">
+    <div class="area-head">
+      <div class="section-title">Your Hand</div>
+      <div class="area-note">${state.hands[0].length} cards · click one to play</div>
+    </div>
+    <div class="hand-grid">`;
+
+  state.hands[0].forEach((c, i) => {
+    html += renderCard(c, {
+      onClick: handDisabled ? '' : `playerPick(${i})`,
+      disabled: handDisabled,
+    });
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function renderResolution() {
+  let html = `<div class="resolution-area">
+    <div>
+      <div class="res-block-title">Net Movement</div>
+      <div class="icon-counts">`;
+  TOKENS.forEach((tok, i) => {
+    const net = state.netCounts[tok.id] || 0;
+    const t = state.tokens.find(t => t.id === tok.id);
+    const d = t.lastDelta || (state.pendingMoves ? state.pendingMoves[tok.id] : 0);
+    const cls = d > 0 ? 'up' : (d < 0 ? 'down' : '');
+    const isVisible = i < state.revealedCounts;
+    const display = net >= 0 ? `+${net}` : `${net}`;
+    html += `<div class="count-cell ${cls}${isVisible ? ' visible' : ''}">
+      <div class="count-cell-chip" style="background:${tok.color}">${tok.id}</div>
+      <div class="count-cell-num">${display}</div>
+    </div>`;
+  });
+  html += `</div>
+    <ul class="log-list">`;
+  state.log.forEach((l, i) => {
+    const isVisible = i < state.revealedLogs;
+    html += `<li class="log-item ${l.type}${isVisible ? ' visible' : ''}">${esc(l.text)}</li>`;
+  });
+  if (state.log.length === 0 && state.revealedLogs > 0) {
+    html += `<li class="log-item visible">No blockers active this round.</li>`;
+  }
+  html += `</ul></div>
+
+    <div>
+      <div class="res-block-title">Why each woman moved or stayed</div>
+      <div class="exp-list">`;
+  state.explanations.forEach((e, i) => {
+    const tok = TOKENS.find(t => t.id === e.tokenId);
+    const isVisible = i < state.revealedExplanations;
+    const deltaCls = e.delta > 0 ? 'up' : (e.delta < 0 ? 'down' : 'flat');
+    const deltaText = e.delta > 0 ? `+${e.delta}` : (e.delta < 0 ? `${e.delta}` : '—');
+    html += `<div class="exp-item${isVisible ? ' visible' : ''}">
+      <div><span class="exp-chip" style="background:${tok.color}">${e.tokenId}</span></div>
+      <div>
+        <div class="exp-head">
+          <div class="exp-name">${tok.name}</div>
+          <div class="exp-delta ${deltaCls}">${deltaText} Hb</div>
+        </div>
+        <div class="exp-body">${esc(e.body)}</div>
+      </div>
+    </div>`;
+  });
+  html += `</div></div></div>`;
+  return html;
+}
+
+function renderEndScreen() {
+  const { tier, label, text, avg } = state.result;
+  const inSevere = state.tokens.filter(t => t.score < 8).length;
+  const atOrAboveMild = state.tokens.filter(t => t.score >= 11).length;
+
+  return `<div class="end-screen">
+    <div class="end-eyebrow">Game over · 7 rounds complete</div>
+    <h2 class="end-title ${tier}">${label}</h2>
+    <p class="end-text">${esc(text)}</p>
+    <div class="end-stats">
+      <div>
+        <div class="end-stat-label">Average Hb</div>
+        <div class="end-stat-value">${avg.toFixed(1)}</div>
+      </div>
+      <div>
+        <div class="end-stat-label">Mild or healthy</div>
+        <div class="end-stat-value">${atOrAboveMild}<span style="font-size:16px;color:var(--ink-3)"> / 6</span></div>
+      </div>
+      <div>
+        <div class="end-stat-label">Still severe</div>
+        <div class="end-stat-value">${inSevere}<span style="font-size:16px;color:var(--ink-3)"> / 6</span></div>
+      </div>
+    </div>
+    <p class="end-note">For reference: the real Mata Kanikansari project moved village average Hb from 9.7 to 11.7 over three years — a gain of +2.0 points.</p>
+    <button class="primary" onclick="restart()">Play another round</button>
+  </div>`;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━ INIT ━━━━━━━━━━━━━━━━━━━ */
+
+init();
+showOnboarding();
+
+</script>
+</body>
+</html>
